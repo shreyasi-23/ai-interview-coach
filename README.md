@@ -22,9 +22,9 @@ None at the moment.
 
 * How to run the program
 * Step-by-step bullets
-```
-code blocks for commands
-```
+cd to folder ai-interview-coach
+npm run dev
+cmd click on link
 
 ## Help
 
