@@ -1,7 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap');
+
 @import "tailwindcss";
 
+html,
+body,
+#root,
+.app {
+  height: 100%;
+  width: 100%;
+  font-family: 'Manrope', system-ui, -apple-system, Avenir, Helvetica, Arial, sans-serif;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
