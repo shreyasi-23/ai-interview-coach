@@ -4,7 +4,7 @@ The purpose of this project is to create a tech-based coach that can help prepar
 
 ## Description
 
-None at the moment.
+AI Coach Interface that keeps track of past interview sessions, and scores the user based on responses and response time, as well as tracks real time advice.
 
 ## Getting Started
 
