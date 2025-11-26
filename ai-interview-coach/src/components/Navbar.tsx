@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ username = 'account' }) => {
 
             {/* menu */}
             {isMenuToggled && (
-                <div className="fixed left-0 top-24 z-40 h-[calc(100vh-96px)] w-[300px] drop-shadow-xl flex flex-col" style={{ background: '#E8D9CD', color: '#523D35' }}>
+                <div className="fixed left-0 top-16 z-40 h-[calc(100vh-64px)] w-[300px] drop-shadow-xl flex flex-col" style={{ background: '#E8D9CD', color: '#523D35' }}>
                     {/* menu items - centered vertically */}
                     <div className="ml-[33%] flex flex-col gap-10 flex-1 justify-center">
                         <p>Frontend</p>
