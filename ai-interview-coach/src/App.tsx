@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { Routes, Route } from "react-router-dom"
 import Interview from "@/pages/Interview";
 
 function App() {
@@ -6,7 +7,9 @@ function App() {
   return (
     <div className="app">
       <Navbar />
-      <Interview />
+      <Routes>
+        <Route path="/" element={<Interview />} />
+      </Routes>
     </div>
   );
 };
