@@ -14,7 +14,7 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
     };
 
     return (
-        <div className="h-screen flex items-center justify-center bg-[#E8D9CD] pt-16">
+        <div className="h-screen flex items-center justify-center bg-[#E8D9CD]">
             <form onSubmit={handleLogin} className="bg-white border-4 border-[#523D35] rounded-2xl
                                                     shadow-xl p-10 w-full max-w-sm text-center">
                 <h2 className="text-2xl font-semibold text-[#523D35] mb-6">

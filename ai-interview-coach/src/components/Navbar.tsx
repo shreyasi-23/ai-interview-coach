@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { CiMenuBurger } from 'react-icons/ci';
 import { MdOutlineAccountCircle } from 'react-icons/md';
 import { useUser } from '../components/UserContext'
+import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+type NavbarProps = {
+    username?: string;
+};
+
+const Navbar: React.FC<NavbarProps> = ({ username = 'account' }) => {
     const { user } = useUser();
     const [isMenuToggled, setIsMenuToggled] = useState<boolean>(false);
 
@@ -37,9 +42,15 @@ const Navbar = () => {
                 <div className="fixed left-0 top-16 z-40 h-[calc(100vh-64px)] w-[300px] drop-shadow-xl flex flex-col" style={{ background: '#E8D9CD', color: '#523D35' }}>
                     {/* menu items - centered vertically */}
                     <div className="ml-[33%] flex flex-col gap-10 flex-1 justify-center">
+                    <Link to="/" className="underline text-lg hover:text-[#7A5C54] transition">
+                            Dashboard
+                        </Link>
                         <p>Frontend</p>
                         <p>Backend</p>
                         <p>Data Science</p>
+                        <Link to="/interview" className="underline text-lg hover:text-[#7A5C54] transition">
+                            AI Interview Practice
+                        </Link>
                     </div>
                 </div>
             )}
