@@ -1,26 +1,43 @@
-import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import { useState, useEffect, useRef } from 'react';
+import type { Message } from '../../../shared/types/message';
 
-type Message = {
-  id: number;
-  role: 'coach' | 'user';
-  text: string;
-  time?: string;
-};
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 const Interview: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, role: 'coach', text: 'Welcome — tell me about a challenging bug you fixed.', time: '00:00' },
-    { id: 2, role: 'user', text: 'I fixed a race condition in our deployment pipeline.', time: '00:12' },
-    { id: 3, role: 'coach', text: 'Great. How did you identify the root cause?', time: '00:25' },
-  ]);
-
   const [seconds, setSeconds] = useState(0);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [improvements, setImprovements] = useState<string[]>([]);
+  const secondsRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const timerId = setInterval(() => setSeconds((s) => s + 1), 1000);
+    const timerId = setInterval(() => {
+      setSeconds((s) => {
+        const newValue = s + 1;
+        secondsRef.current = newValue;
+        return newValue;
+      });
+    }, 1000);
     return () => clearInterval(timerId);
+  }, []);
+
+  // Fetch initial welcome message
+  useEffect(() => {
+    const fetchWelcomeMessage = async () => {
+      try {
+        const result = await axios.post(`${BACKEND_URL}/coach/generate-response`, {
+          message: 'Start the interview',
+          history: []
+        });
+        setMessages([{ id: 1, role: 'coach', text: result.data.response, time: '00:00' }]);
+      } catch (error) {
+        console.error('Error fetching welcome message:', error);
+      }
+    };
+    fetchWelcomeMessage();
   }, []);
 
   useEffect(() => {
@@ -38,17 +55,32 @@ const Interview: React.FC = () => {
     return `${mm}:${ss}`;
   };
 
-  const handleSubmit = () => {
-    if (!input.trim()) return; // ignore empty input
-    const id = messages.length + 1;
-    const newMsg: Message = { id, role: 'user', text: input.trim(), time: formatTime(seconds) };
-    setMessages((m) => [...m, newMsg]);
-    setInput('');
+  const handleSubmit = async () => {
+    if (!input.trim() || isLoading) return;
 
-    // simulated coach reply after 2000 ms
-    setTimeout(() => {
-      setMessages((m) => [...m, { id: m.length + 1, role: 'coach', text: 'Thanks — can you expand on that?', time: formatTime(seconds + 2) }]);
-    }, 2000);
+    const userText = input.trim();
+
+    const history = messages; // stores history before adding new message
+
+    setMessages((m) => [...m, { id: m.length + 1, role: "user", text: userText, time: formatTime(secondsRef.current) }]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      // Call backend API with message and conversation history
+      const result = await axios.post(`${BACKEND_URL}/coach/generate-response`, {
+        message: userText,
+        history
+      });
+
+      setMessages((m) => [...m, { id: m.length + 1, role: "coach", text: result.data.response, time: formatTime(secondsRef.current) }]);
+      setImprovements(result.data.improvements || []);
+    } catch (error) {
+      console.error('Error:', error);
+      setMessages((m) => [...m, { id: m.length + 1, role: 'coach', text: 'Sorry, I encountered an error. Please try again.', time: formatTime(seconds) }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -62,13 +94,17 @@ const Interview: React.FC = () => {
 
         <p>potential improvements</p>
         <ul className="list-disc list-inside mt-2">
-          <li>Be concise</li>
-          <li>Show trade-offs</li>
-          <li>Discuss alternatives</li>
+          {improvements.length > 0 ? (
+            improvements.map((improvement, index) => (
+              <li key={index}>{improvement}</li>
+            ))
+          ) : (
+            <li className="opacity-60">Start answering to see tips</li>
+          )}
         </ul>
       </div>
 
-      {/* Main interview area (accounting for sidebar) */}
+      {/* Main interview area */}
       <div className="ml-72 flex flex-col flex-1">
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 text-[#523D35]">
           {messages.map((m) => (
@@ -96,12 +132,13 @@ const Interview: React.FC = () => {
 
           <button
             onClick={handleSubmit}
+            disabled={isLoading}
             className="w-full mt-3 text-white border-2 border-black py-3 rounded transition-colors"
-            style={{ cursor: 'pointer', backgroundColor: '#BBA58F' }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#523D35')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#BBA58F')}
+            style={{ cursor: isLoading ? 'not-allowed' : 'pointer', backgroundColor: isLoading ? '#888' : '#BBA58F' }}
+            onMouseEnter={(e) => !isLoading && (e.currentTarget.style.backgroundColor = '#523D35')}
+            onMouseLeave={(e) => !isLoading && (e.currentTarget.style.backgroundColor = '#BBA58F')}
           >
-            SUBMIT ANSWER!
+            {isLoading ? 'Coach is thinking...' : 'SUBMIT ANSWER!'}
           </button>
         </div>
       </div>
