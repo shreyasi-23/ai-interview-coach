@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import homeIcon from "@/assets/home-icon.png"; // make own images
 import interviewIcon from "@/assets/interview-icon.png";
 
-const AdminPanel = () => {
+const HomePage = () => {
     const { user } = useUser()
 
     return (
-        <div className="min-h-screen bg-[#F4ECE6] flex items-center justify-center px-6 pb-16">
+        <div className="min-h-screen bg-[#F4ECE6] flex items-center justify-center px-6 pt-16">
           <div className="bg-white border-4 border-[#523D35] rounded-2xl p-10 shadow-xl max-w-2xl w-full text-center text-[#523D35]">
     
             {/* Icon at top */}
@@ -40,4 +40,4 @@ const AdminPanel = () => {
       );
     };
 
-export default AdminPanel;
+export default HomePage;
