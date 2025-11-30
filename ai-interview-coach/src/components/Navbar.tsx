@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { CiMenuBurger } from 'react-icons/ci';
 import { MdOutlineAccountCircle } from 'react-icons/md';
-import { useUser } from '../components/UserContext'
 import { Link } from 'react-router-dom';
+import { signOut } from "firebase/auth";
+import { auth } from '@/firebase/config';
 
-type NavbarProps = {
-    username?: string;
-};
-
-const Navbar: React.FC<NavbarProps> = ({ username = 'account' }) => {
-    const { user } = useUser();
+const Navbar: React.FC = () => {
     const [isMenuToggled, setIsMenuToggled] = useState<boolean>(false);
+    const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState<boolean>(false);
+
+    const handleLogout = () => {
+        if (confirm("Are you sure you want to log out?")) {
+            signOut(auth).catch((error) => {
+                console.log(error);
+            });
+        }
+    };
 
     return (
         <nav>
@@ -30,28 +35,48 @@ const Navbar: React.FC<NavbarProps> = ({ username = 'account' }) => {
                     <p style={{ fontWeight: 700, letterSpacing: 1 }}>AI INTERVIEW COACH</p>
 
                     {/* Right: account icon + username */}
-                    <button className="flex items-center" style={{ gap: 8, background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer' }}>
+                    <button
+                        className="flex items-center"
+                        style={{ gap: 8, background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer' }}
+                        onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
+                    >
                         <MdOutlineAccountCircle size={28} />
-                        <p style={{ fontWeight: 400 }}>{user.username ?? "account"}</p>
+                        <p style={{ fontWeight: 400 }}>account</p>
                     </button>
                 </div>
             </div>
 
             {/* menu */}
             {isMenuToggled && (
-                <div className="fixed left-0 top-16 z-40 h-[calc(100vh-64px)] w-[300px] drop-shadow-xl flex flex-col" style={{ background: '#E8D9CD', color: '#523D35' }}>
+                <div className="fixed left-0 top-[76px] z-40 h-[calc(100vh-76px)] w-[300px] drop-shadow-xl flex flex-col" style={{ background: '#E8D9CD', color: '#523D35' }}>
                     {/* menu items - centered vertically */}
                     <div className="ml-[33%] flex flex-col gap-10 flex-1 justify-center">
-                    <Link to="/" className="underline text-lg hover:text-[#7A5C54] transition">
+                        <Link to="/" className="hover:text-[#7A5C54] transition">
                             Dashboard
                         </Link>
                         <p>Frontend</p>
                         <p>Backend</p>
                         <p>Data Science</p>
-                        <Link to="/interview" className="underline text-lg hover:text-[#7A5C54] transition">
+                        <Link to="/interview" className="hover:text-[#7A5C54] transition">
                             AI Interview Practice
                         </Link>
                     </div>
+                </div>
+            )}
+
+            {/* Account dropdown */}
+            {isAccountDropdownOpen && (
+                <div
+                    className="fixed right-[-2px] top-[74px] z-40 w-[300px] shadow-lg bg-white"
+                    style={{ border: '2px solid #523D35'}}
+                >
+                    <button
+                        onClick={handleLogout}
+                        className="w-full px-3 py-2 hover:bg-gray-100 rounded transition"
+                        style={{ color: 'black', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    >
+                        Logout
+                    </button>
                 </div>
             )}
         </nav>

@@ -1,40 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import AdminPanel from "@/pages/AdminPanel";
-import LoginForm from "@/pages/LoginForm";
+import HomePage from "@/pages/HomePage";
+import LoginPage from "@/pages/LoginPage";
 import { Routes, Route } from "react-router-dom";
-import Interview from "@/pages/Interview";
+import InterviewPage from "@/pages/InterviewPage";
+import { auth } from "@/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Function to handle login
-  const handleLogin = () => {
-    setIsLoggedIn(true); // Update state to indicate the user is logged in
-  };
+  onAuthStateChanged(auth, (user) => {
+    setIsLoggedIn(!!user);
+    setLoading(false);
+  });
+
+  if (loading) {
+    return <div className="h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   return (
     <>
-    <div className="app">
-      {/* Show Navbar only if logged in */}
-      {isLoggedIn && <Navbar />}
+      <div className="app">
+        {/* Show Navbar only if logged in */}
+        {isLoggedIn && <Navbar />}
 
-      <div>
-      <Routes>
-            {!isLoggedIn ? (
-              // LOGIN FORM CATCH-ALL
-              <Route path="*" element={<LoginForm onLogin={handleLogin} />} />
-            ) : (
-              <>
-                {/* Dashboard / Homepage */}
-                <Route path="/" element={<AdminPanel />} />
+        <div>
+        <Routes>
+              {!isLoggedIn ? (
+                // LOGIN FORM CATCH-ALL
+                <Route path="*" element={<LoginPage />} />
+              ) : (
+                <>
+                  {/* Dashboard / Homepage */}
+                  <Route path="/" element={<HomePage />} />
 
-                {/* Interview Page */}
-                <Route path="/interview" element={<Interview />} />
-              </>
-            )}
-          </Routes>
-      </div>
+                  {/* Interview Page */}
+                  <Route path="/interview" element={<InterviewPage />} />
+                </>
+              )}
+            </Routes>
+        </div>
       </div>
     </>
   );

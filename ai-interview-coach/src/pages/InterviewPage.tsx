@@ -4,7 +4,7 @@ import type { Message } from '../../../shared/types/message';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
-const Interview: React.FC = () => {
+const InterviewPage: React.FC = () => {
   const [seconds, setSeconds] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -243,4 +243,4 @@ const Interview: React.FC = () => {
   );
 };
 
-export default Interview;
+export default InterviewPage;
